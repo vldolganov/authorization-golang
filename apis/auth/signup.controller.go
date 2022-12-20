@@ -1,30 +1,45 @@
 package auth
 
 import (
+	"strings"
+
+	"github.com/gofiber/fiber/v2"
+
 	"authorizationGolang/database"
 	"authorizationGolang/database/models"
-	"github.com/gofiber/fiber/v2"
-	"strings"
+	"authorizationGolang/utilities/hash"
+	"authorizationGolang/utilities/jwt"
 )
 
 func SignUp(c *fiber.Ctx) error {
 	var payload RequestPayload
-
 	var db = database.Connection
 
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("bad request")
 	} else if strings.TrimSpace(payload.Login) == "" &&
-		strings.TrimSpace(payload.Password) == "" {
+			strings.TrimSpace(payload.Password) == "" {
 		return c.Status(fiber.StatusBadRequest).JSON("pass login or password")
 	}
 
+	hashPassword, _ := hash.HashPassword(payload.Password)
+
 	var user = models.Users{
 		Login:    payload.Login,
-		Password: payload.Password,
+		Password: hashPassword,
 	}
 
 	db.Create(&user)
 
-	return c.Status(fiber.StatusCreated).JSON(user)
+	token, err := jwt.CreateToken(user.ID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("bad req")
+	}
+
+	var res = Response{
+		user,
+		token,
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(res)
 }

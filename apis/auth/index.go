@@ -7,5 +7,6 @@ import (
 func UserRouter(api fiber.Router) {
 	UserApi := api.Group("/auth")
 
-	UserApi.Post("/signup", SignUp)
+	UserApi.Post("/sign-up", SignUp)
+	UserApi.Post("/sign-in", SignIn)
 }
