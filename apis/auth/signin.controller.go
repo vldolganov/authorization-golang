@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"authorizationGolang/utilities"
 	"strings"
 	"time"
 
@@ -8,8 +9,6 @@ import (
 
 	"authorizationGolang/database"
 	"authorizationGolang/database/models"
-	"authorizationGolang/utilities/hash"
-	"authorizationGolang/utilities/jwt"
 )
 
 func SignIn(c *fiber.Ctx) error {
@@ -29,16 +28,20 @@ func SignIn(c *fiber.Ctx) error {
 		Password: payload.Password,
 	}
 
-	db.Where("login", user.Login).Find(&user)
+	result := db.Where("login", user.Login).Find(&user)
 
-	checkPassHash := hash.CheckPasswordHash(payload.Password, user.Password)
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON("user not found")
+	}
+
+	checkPassHash := utilities.CheckPasswordHash(payload.Password, user.Password)
 
 	if !checkPassHash {
 		return c.Status(fiber.StatusUnauthorized).JSON("wrong password")
 	}
 
-	refreshToken, err := jwt.CreateToken(user.ID, 240*time.Hour)
-	accessToken, err := jwt.CreateToken(user.ID, 240*time.Minute)
+	refreshToken, err := utilities.CreateToken(user.ID, 240*time.Hour)
+	accessToken, err := utilities.CreateToken(user.ID, 240*time.Minute)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("bad req")
 	}

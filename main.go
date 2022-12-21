@@ -1,15 +1,18 @@
 package main
 
 import (
-	"authorizationGolang/apis"
+	"log"
+
+	"authorizationGolang/apis/auth"
 	"authorizationGolang/database"
 	"github.com/gofiber/fiber/v2"
-	"log"
 )
 
 func main() {
 	app := fiber.New()
 	database.InitConnection()
-	apis.InitRouter(app)
+
+	auth.UserRouter(app)
+
 	log.Fatal(app.Listen(":5050"))
 }

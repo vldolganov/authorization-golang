@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"authorizationGolang/utilities"
 	"strings"
 	"time"
 
@@ -8,8 +9,6 @@ import (
 
 	"authorizationGolang/database"
 	"authorizationGolang/database/models"
-	"authorizationGolang/utilities/hash"
-	"authorizationGolang/utilities/jwt"
 )
 
 func SignUp(c *fiber.Ctx) error {
@@ -23,7 +22,7 @@ func SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("pass login or password")
 	}
 
-	hashPassword, _ := hash.HashPassword(payload.Password)
+	hashPassword := utilities.HashPassword(payload.Password)
 
 	var user = models.Users{
 		Login:    payload.Login,
@@ -32,14 +31,12 @@ func SignUp(c *fiber.Ctx) error {
 
 	result := db.Create(&user)
 
-	dbError := result.RowsAffected
-
-	if dbError == 0 {
+	if result.RowsAffected == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON("User already exist")
 	}
 
-	refreshToken, err := jwt.CreateToken(user.ID, 240*time.Hour)
-	accessToken, err := jwt.CreateToken(user.ID, 240*time.Minute)
+	refreshToken, err := utilities.CreateToken(user.ID, 240*time.Hour)
+	accessToken, err := utilities.CreateToken(user.ID, 240*time.Minute)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("bad req")
 	}
