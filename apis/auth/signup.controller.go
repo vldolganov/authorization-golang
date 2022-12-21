@@ -18,7 +18,7 @@ func SignUp(c *fiber.Ctx) error {
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("bad request")
 	} else if strings.TrimSpace(payload.Login) == "" &&
-			strings.TrimSpace(payload.Password) == "" {
+		strings.TrimSpace(payload.Password) == "" {
 		return c.Status(fiber.StatusBadRequest).JSON("pass login or password")
 	}
 
@@ -29,9 +29,14 @@ func SignUp(c *fiber.Ctx) error {
 		Password: hashPassword,
 	}
 
-	db.Create(&user)
+	result := db.Create(&user)
 
-	token, err := jwt.CreateToken(user.ID)
+	dbError := result.RowsAffected
+
+	if dbError == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON("User already exist")
+	}
+	token, err := jwt.CreateToken(user.ID, user.Login)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("bad req")
 	}

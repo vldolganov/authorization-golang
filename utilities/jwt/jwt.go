@@ -9,18 +9,16 @@ import (
 	"github.com/pascaldekloe/jwt"
 )
 
-func CreateToken(userId uint) (string, error) {
+func CreateToken(userId uint, login string) (string, error) {
 	var myEnv map[string]string
 	myEnv, err := godotenv.Read()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	secret := myEnv["SECRET_WORD"]
-
 	var claims jwt.Claims
 	claims.Issued = jwt.NewNumericTime(time.Now().Round(time.Second))
-	claims.Set = map[string]interface{}{"id": userId}
+	claims.Set = map[string]interface{}{"id": userId, "login": login}
 
 	var extraString = ExtraString{
 		"HS256",
@@ -28,6 +26,6 @@ func CreateToken(userId uint) (string, error) {
 	}
 
 	jsonExtra, _ := json.Marshal(extraString)
-	token, err := claims.HMACSign(jwt.HS256, []byte(secret), jsonExtra)
+	token, err := claims.HMACSign(jwt.HS256, []byte(myEnv["SECRET_WORD"]), jsonExtra)
 	return string(token), nil
 }
