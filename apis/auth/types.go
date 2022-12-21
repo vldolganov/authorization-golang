@@ -8,6 +8,6 @@ type RequestPayload struct {
 }
 
 type Response struct {
-	User  models.Users `json:"user"`
-	Token string       `json:"token"`
+	User        models.Users `json:"user"`
+	AccessToken string       `json:"access_token"`
 }

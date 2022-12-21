@@ -2,6 +2,7 @@ package auth
 
 import (
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -36,14 +37,21 @@ func SignUp(c *fiber.Ctx) error {
 	if dbError == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON("User already exist")
 	}
-	token, err := jwt.CreateToken(user.ID, user.Login)
+
+	refreshToken, err := jwt.CreateToken(user.ID, 240*time.Hour)
+	accessToken, err := jwt.CreateToken(user.ID, 240*time.Minute)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("bad req")
 	}
 
+	cookie := new(fiber.Cookie)
+	cookie.Name = "refresh_token"
+	cookie.Value = refreshToken
+	cookie.Expires = time.Now().Add(240 * time.Hour)
+	c.Cookie(cookie)
 	var res = Response{
 		user,
-		token,
+		accessToken,
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(res)
