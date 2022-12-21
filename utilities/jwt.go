@@ -1,22 +1,15 @@
 package utilities
 
 import (
-	"log"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/pascaldekloe/jwt"
 
 	"encoding/json"
 )
 
-func CreateToken(userId uint, lifeTime time.Duration) (string, error) {
+func CreateToken(userId uint, lifeTime time.Duration, secret string) (string, error) {
 
-	var myEnv map[string]string
-	myEnv, err := godotenv.Read()
-	if err != nil {
-		log.Fatal(err)
-	}
 	var claims jwt.Claims
 	claims.Issued = jwt.NewNumericTime(time.Now().Round(time.Second))
 	claims.Set = map[string]interface{}{"id": userId}
@@ -27,6 +20,6 @@ func CreateToken(userId uint, lifeTime time.Duration) (string, error) {
 	}
 
 	jsonExtra, _ := json.Marshal(extraString)
-	token, err := claims.HMACSign(jwt.HS256, []byte(myEnv["SECRET_WORD"]), jsonExtra)
+	token, _ := claims.HMACSign(jwt.HS256, []byte(secret), jsonExtra)
 	return string(token), nil
 }

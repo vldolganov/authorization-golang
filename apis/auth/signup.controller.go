@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"authorizationGolang/utilities"
+	"os"
 	"strings"
 	"time"
 
@@ -9,16 +9,19 @@ import (
 
 	"authorizationGolang/database"
 	"authorizationGolang/database/models"
+	"authorizationGolang/utilities"
 )
 
 func SignUp(c *fiber.Ctx) error {
 	var payload RequestPayload
 	var db = database.Connection
 
+	login := strings.TrimSpace(payload.Login)
+	password := strings.TrimSpace(payload.Password)
+
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("bad request")
-	} else if strings.TrimSpace(payload.Login) == "" &&
-		strings.TrimSpace(payload.Password) == "" {
+	} else if login == "" && password == "" {
 		return c.Status(fiber.StatusBadRequest).JSON("pass login or password")
 	}
 
@@ -35,8 +38,10 @@ func SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("User already exist")
 	}
 
-	refreshToken, err := utilities.CreateToken(user.ID, 240*time.Hour)
-	accessToken, err := utilities.CreateToken(user.ID, 240*time.Minute)
+	refreshSecret := os.Getenv("SECRET_REFRESH")
+	accessSecret := os.Getenv("SECRET_ACCESS")
+	refreshToken, err := utilities.CreateToken(user.ID, 240*time.Hour, refreshSecret)
+	accessToken, err := utilities.CreateToken(user.ID, 240*time.Minute, accessSecret)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("bad req")
 	}
