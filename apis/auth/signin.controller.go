@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"authorizationGolang/utilities"
+	"os"
 	"strings"
 	"time"
 
@@ -9,6 +9,7 @@ import (
 
 	"authorizationGolang/database"
 	"authorizationGolang/database/models"
+	"authorizationGolang/utilities"
 )
 
 func SignIn(c *fiber.Ctx) error {
@@ -40,8 +41,10 @@ func SignIn(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON("wrong password")
 	}
 
-	refreshToken, err := utilities.CreateToken(user.ID, 240*time.Hour)
-	accessToken, err := utilities.CreateToken(user.ID, 240*time.Minute)
+	refreshSecret := os.Getenv("SECRET_REFRESH-")
+	accessSecrer := os.Getenv("SECRET_ACCESS")
+	refreshToken, err := utilities.CreateToken(user.ID, 240*time.Hour, refreshSecret)
+	accessToken, err := utilities.CreateToken(user.ID, 240*time.Minute, accessSecrer)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("bad req")
 	}
@@ -55,6 +58,7 @@ func SignIn(c *fiber.Ctx) error {
 	cookie.Name = "refresh_token"
 	cookie.Value = refreshToken
 	cookie.Expires = time.Now().Add(240 * time.Hour)
+	cookie.HTTPOnly = true
 	c.Cookie(cookie)
 
 	return c.Status(fiber.StatusCreated).JSON(res)

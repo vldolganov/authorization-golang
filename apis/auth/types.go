@@ -1,6 +1,8 @@
 package auth
 
-import "authorizationGolang/database/models"
+import (
+	"authorizationGolang/database/models"
+)
 
 type RequestPayload struct {
 	Login    string `json:"login"`

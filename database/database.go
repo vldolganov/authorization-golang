@@ -2,8 +2,8 @@ package database
 
 import (
 	"log"
-	"os"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -14,11 +14,14 @@ var Connection *gorm.DB
 
 func InitConnection() {
 
-	host := os.Getenv("HOST")
-	user := os.Getenv("USER")
-	password := os.Getenv("PASSWORD")
-	dbname := os.Getenv("DBNAME")
-	port := os.Getenv("PORT")
+	var myEnv map[string]string
+	myEnv, err := godotenv.Read()
+
+	host := myEnv["HOST"]
+	user := myEnv["USER"]
+	password := myEnv["PASSWORD"]
+	dbname := myEnv["DBNAME"]
+	port := myEnv["PORT"]
 
 	dsn := "host=" + host + " user=" + user +
 			" password=" + password + " dbname=" + dbname + " port=" + port

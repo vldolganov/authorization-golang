@@ -21,7 +21,7 @@ func SignUp(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("bad request")
-	} else if login == "" && password == "" {
+	} else if login != "" && password != "" {
 		return c.Status(fiber.StatusBadRequest).JSON("pass login or password")
 	}
 
