@@ -5,9 +5,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GoogleLogin(c *fiber.Ctx) {
+func GoogleLogin(c *fiber.Ctx) error {
 	googleConfig := config.SetupConfig()
 	url := googleConfig.AuthCodeURL("randomstate")
 
-	c.Redirect(url)
+	return c.Redirect(url)
 }
