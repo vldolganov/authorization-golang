@@ -7,7 +7,6 @@ import (
 
 func GoogleLogin(c *fiber.Ctx) error {
 	googleConfig := config.SetupConfig()
-	url := googleConfig.AuthCodeURL("randomstate")
-
-	return c.Redirect(url)
+	url := googleConfig.AuthCodeURL("random")
+	return c.Status(fiber.StatusTemporaryRedirect).Redirect(url)
 }

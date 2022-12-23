@@ -10,5 +10,6 @@ func UserRouter(app *fiber.App) {
 
 	UserApi.Post("/sign-up", SignUp)
 	UserApi.Post("/sign-in", SignIn)
-	UserApi.Get("/google-log", GoogleLogin)
+	UserApi.Get("/google/login", GoogleLogin)
+	UserApi.Get("/google-callback", GoogleCallback)
 }

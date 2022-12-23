@@ -41,7 +41,7 @@ func SignUp(c *fiber.Ctx) error {
 	refreshSecret := os.Getenv("SECRET_REFRESH")
 	accessSecret := os.Getenv("SECRET_ACCESS")
 	refreshToken, err := utilities.CreateToken(user.ID, 240*time.Hour, refreshSecret)
-	accessToken, err := utilities.CreateToken(user.ID, 240*time.Minute, accessSecret)
+	accessToken, err := utilities.CreateToken(user.ID, 15*time.Minute, accessSecret)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("bad req")
 	}

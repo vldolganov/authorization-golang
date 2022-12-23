@@ -21,5 +21,5 @@ func main() {
 
 	auth.UserRouter(app)
 
-	log.Fatal(app.Listen(":5050"))
+	log.Fatal(app.Listen(":5000"))
 }
