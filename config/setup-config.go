@@ -11,9 +11,9 @@ func SetupConfig() *oauth2.Config {
 	conf := &oauth2.Config{
 		ClientID:     os.Getenv("CLIENT_ID"),
 		ClientSecret: os.Getenv("CLIENT_SECRET"),
-		RedirectURL:  os.Getenv("REDIRECT_URL"),
+		RedirectURL:  "http://localhost:5000/api/auth/google-callback",
 		Scopes: []string{
-			os.Getenv("USERINFO_PROFILER"),
+			os.Getenv("USERINFO_PROFILE"),
 			os.Getenv("USERINFO_EMAIL"),
 		},
 		Endpoint: google.Endpoint,
