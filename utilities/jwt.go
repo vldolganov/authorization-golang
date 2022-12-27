@@ -19,7 +19,16 @@ func CreateToken(userId uint, lifeTime time.Duration, secret string) string {
 		"JWT",
 	}
 
-	jsonExtra, _ := json.Marshal(extraString)
-	token, _ := claims.HMACSign(jwt.HS256, []byte(secret), jsonExtra)
+	jsonExtra, jsonErr := json.Marshal(extraString)
+
+	if jsonErr != nil {
+		return "Extra string error"
+	}
+	token, err := claims.HMACSign(jwt.HS256, []byte(secret), jsonExtra)
+
+	if err != nil {
+		return "Token error"
+	}
+	
 	return string(token)
 }
