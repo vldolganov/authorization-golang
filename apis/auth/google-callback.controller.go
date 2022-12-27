@@ -1,6 +1,9 @@
 package auth
 
 import (
+	"io/ioutil"
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/oauth2"
 
@@ -20,5 +23,13 @@ func GoogleCallback(c *fiber.Ctx) error {
 
 	url := "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken
 
-	return c.Status(fiber.StatusOK).Redirect(url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON("user not found")
+	}
+
+	defer resp.Body.Close()
+
+	content, _ := ioutil.ReadAll(resp.Body)
+	return c.Status(fiber.StatusOK).Send(content)
 }

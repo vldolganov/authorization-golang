@@ -11,13 +11,13 @@ import (
 )
 
 func main() {
-	app := fiber.New()
-	database.InitConnection()
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	app := fiber.New()
+	database.InitConnection()
 
 	auth.UserRouter(app)
 

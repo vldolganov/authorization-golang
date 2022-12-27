@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 )
 
-func CreateToken(userId uint, lifeTime time.Duration, secret string) (string, error) {
+func CreateToken(userId uint, lifeTime time.Duration, secret string) string {
 
 	var claims jwt.Claims
 	claims.Issued = jwt.NewNumericTime(time.Now().Round(time.Second))
@@ -21,5 +21,5 @@ func CreateToken(userId uint, lifeTime time.Duration, secret string) (string, er
 
 	jsonExtra, _ := json.Marshal(extraString)
 	token, _ := claims.HMACSign(jwt.HS256, []byte(secret), jsonExtra)
-	return string(token), nil
+	return string(token)
 }

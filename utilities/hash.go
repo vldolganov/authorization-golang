@@ -7,7 +7,7 @@ import (
 func HashPassword(password string) string {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
-		return "hash error"
+		return err.Error()
 	}
 	return hash
 }

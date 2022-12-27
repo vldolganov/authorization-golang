@@ -36,15 +36,14 @@ func SignUp(c *fiber.Ctx) error {
 
 	if result.RowsAffected == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON("User already exist")
+	} else if result.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON("db error")
 	}
 
 	refreshSecret := os.Getenv("SECRET_REFRESH")
 	accessSecret := os.Getenv("SECRET_ACCESS")
-	refreshToken, err := utilities.CreateToken(user.ID, 240*time.Hour, refreshSecret)
-	accessToken, err := utilities.CreateToken(user.ID, 15*time.Minute, accessSecret)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString("bad req")
-	}
+	refreshToken := utilities.CreateToken(user.ID, 240*time.Hour, refreshSecret)
+	accessToken := utilities.CreateToken(user.ID, 15*time.Minute, accessSecret)
 
 	cookie := new(fiber.Cookie)
 	cookie.Name = "refresh_token"
@@ -52,7 +51,8 @@ func SignUp(c *fiber.Ctx) error {
 	cookie.Expires = time.Now().Add(240 * time.Hour)
 	c.Cookie(cookie)
 	var res = Response{
-		user,
+		user.ID,
+		user.Login,
 		accessToken,
 	}
 
