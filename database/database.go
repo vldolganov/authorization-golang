@@ -24,7 +24,7 @@ func InitConnection() {
 	port := myEnv["PORT"]
 
 	dsn := "host=" + host + " user=" + user +
-			" password=" + password + " dbname=" + dbname + " port=" + port
+		" password=" + password + " dbname=" + dbname + " port=" + port
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

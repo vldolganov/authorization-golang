@@ -12,6 +12,6 @@ type Response struct {
 }
 
 type GooglePayload struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID    string
+	Email string
 }
