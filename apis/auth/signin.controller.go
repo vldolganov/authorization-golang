@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -39,10 +38,10 @@ func SignIn(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON("wrong password")
 	}
 
-	refreshSecret := os.Getenv("SECRET_REFRESH-")
-	accessSecrer := os.Getenv("SECRET_ACCESS")
+	refreshSecret := "freshmeat"
+	accessSecret := "jellybellybell"
 	refreshToken := utilities.CreateToken(user.ID, 240*time.Hour, refreshSecret)
-	accessToken := utilities.CreateToken(user.ID, 15*time.Minute, accessSecrer)
+	accessToken := utilities.CreateToken(user.ID, 15*time.Minute, accessSecret)
 
 	var res = Response{
 		user.ID,

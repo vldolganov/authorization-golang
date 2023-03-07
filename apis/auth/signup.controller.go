@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"os"
 	"strings"
 	"time"
 
@@ -40,8 +39,8 @@ func SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("db error")
 	}
 
-	refreshSecret := os.Getenv("SECRET_REFRESH")
-	accessSecret := os.Getenv("SECRET_ACCESS")
+	refreshSecret := "freshmeat"
+	accessSecret := "jellybellybell"
 	refreshToken := utilities.CreateToken(user.ID, 240*time.Hour, refreshSecret)
 	accessToken := utilities.CreateToken(user.ID, 15*time.Minute, accessSecret)
 

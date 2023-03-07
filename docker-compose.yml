@@ -2,32 +2,38 @@ version: '3.5'
 
 services:
   authorization-app:
-    build: ./
-#    command: wait-for-postgres.sh db
+    container_name: authorization-app
+    build:
+      dockerfile: Dockerfile
+      context: .
     ports:
-      - "8080:8080"
+      - "5000:5000"
     depends_on:
       - db
-    environment:
-      - SECRET_ACCESS="jellybellybell"
-      - SECRET_REFRESH="freshmeat"
-      - CLIENT_SECRET="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"
-      - CLIENT_ID="891267034828-iaqbrrn62te9ps06esnl8j7fnqk2uok2.apps.googleusercontent.com"
-      - REDIRECT_URL="http://localhost:5000/api/auth/google-callback"
-      - USERINFO_EMAIL="https://www.googleapis.com/auth/userinfo.email"
-      - USERINFO_PROFILE="https://www.googleapis.com/auth/userinfo.profile"
-      - GOOGLE_APIS="https://www.googleapis.com/oauth2/v2/userinfo?access_token="
-  db:
     restart: always
-    image: postgres
-    volumes:
-      - ./db/postgres/data:/var/lib/postgresql/data
     environment:
-    - HOST=localhost
-    - USER=dolganoffadmin
-    - PASSWORD=dolganoffadmin
-    - DBNAME="users"
-    - PORT="5436"
-    - POSTGRES_HOST_AUTH_METHOD=trust
+      DB_HOST: "localhost"
+      DB_PORT: "5432"
+      DB_USERNAME: "users"
+      DB_PASSWORD: "dolganoffadmin"
+    networks:
+      - default
+  db:
+    container_name: db
+    build:
+      context: ./sql
+      dockerfile: db.Dockerfile
+    restart: always
+    image: postgres:14
+    volumes:
+      - ./sql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
-      - "5436:5436"
+      - "5436:5432"
+    environment:
+      POSTGRES_USER: "dolganoffadmin"
+      POSTGRES_PASSWORD: "dolganoffadmin"
+      POSTGRES_DB: "users"
+    networks:
+      - default
+networks:
+  default: {}
