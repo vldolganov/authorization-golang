@@ -1,9 +1,9 @@
 package database
 
 import (
+	"fmt"
 	"log"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -12,21 +12,22 @@ import (
 
 var Connection *gorm.DB
 
-func InitConnection() {
+type Config struct {
+	Host     string
+	Port     string
+	Password string
+	User     string
+	DBName   string
+	SSLMode  string
+}
 
-	var myEnv map[string]string
-	myEnv, err := godotenv.Read()
-
-	host := myEnv["HOST"]
-	user := myEnv["USER"]
-	password := myEnv["PASSWORD"]
-	dbname := myEnv["DBNAME"]
-	port := myEnv["PORT"]
-
-	dsn := "host=" + host + " user=" + user +
-			" password=" + password + " dbname=" + dbname + " port=" + port
+func InitConnection(config *Config) {
+	dsn := fmt.Sprintf("host=%s\nport=%s\nuser=%s\npassword=%s\ndbname=%s\nsslmode=%s",
+		config.Host, config.Port, config.User, config.Password, config.DBName, config.SSLMode,
+	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
 	if err != nil {
 		log.Fatal(err)
 	}

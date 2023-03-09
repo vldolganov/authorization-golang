@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  authorization-app:
+    container_name: authorization-app
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "5020:5000"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - default
+  db:
+    container_name: db
+    build:
+      context: ./sql
+      dockerfile: db.Dockerfile
+    restart: always
+    image: postgres:14
+    volumes:
+      - ./sql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    ports:
+      - "5432:5432"
+    env_file:
+      - cmd/.env
+    networks:
+      - default
+
+volumes:
+  data:
+
+networks:
+  default: {}
