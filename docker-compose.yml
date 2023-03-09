@@ -7,15 +7,10 @@ services:
       dockerfile: Dockerfile
       context: .
     ports:
-      - "5000:5000"
+      - "5020:5000"
     depends_on:
       - db
     restart: always
-    environment:
-      DB_HOST: "localhost"
-      DB_PORT: "5432"
-      DB_USERNAME: "users"
-      DB_PASSWORD: "dolganoffadmin"
     networks:
       - default
   db:
@@ -28,12 +23,14 @@ services:
     volumes:
       - ./sql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
-      - "5436:5432"
-    environment:
-      POSTGRES_USER: "dolganoffadmin"
-      POSTGRES_PASSWORD: "dolganoffadmin"
-      POSTGRES_DB: "users"
+      - "5432:5432"
+    env_file:
+      - cmd/.env
     networks:
       - default
+
+volumes:
+  data:
+
 networks:
   default: {}
