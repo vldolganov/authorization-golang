@@ -1,0 +1,25 @@
+FROM golang:1.18 as builder
+WORKDIR /build
+
+COPY cmd /build/cmd
+COPY apis /build/apis
+COPY config /build/config
+COPY database /build/database
+COPY utilities /build/utilities
+COPY go.mod go.sum /build/
+
+RUN go build GOOS=linux -o main ./cmd/main.go
+
+FROM alpine:3.17.2 as server
+RUN apk add --no-cache
+
+COPY --from=builder /build/main /app/
+# COPY --from=builder /build/apis /app/apis
+# COPY --from=builder /build/config /app/config
+# COPY --from=builder /build/
+# COPY --from=builder /build/
+# COPY --from=builder /build/
+
+WORKDIR /app
+
+CMD ["./main", "--c"]

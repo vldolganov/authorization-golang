@@ -1,0 +1,20 @@
+FROM golang:1.18 AS builder
+WORKDIR /build
+
+COPY cmd /build/cmd
+COPY apis /build/apis
+COPY config /build/config
+COPY database /build/database
+COPY
+
+RUN go version
+ENV GOPATH=/cmd
+
+EXPOSE 5000
+
+COPY ./ ./
+
+RUN go mod download
+RUN go build -o authorizationGolang ./cmd/main.go
+
+CMD ["./authorizationGolang"]

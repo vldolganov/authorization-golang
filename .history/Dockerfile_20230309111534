@@ -1,0 +1,14 @@
+FROM golang:1.18 AS builder
+WOR
+
+RUN go version
+ENV GOPATH=/cmd
+
+EXPOSE 5000
+
+COPY ./ ./
+
+RUN go mod download
+RUN go build -o authorizationGolang ./cmd/main.go
+
+CMD ["./authorizationGolang"]

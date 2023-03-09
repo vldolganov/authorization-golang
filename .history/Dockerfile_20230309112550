@@ -1,0 +1,26 @@
+FROM golang:1.18 AS builder
+WORKDIR /build
+
+COPY cmd /build/cmd
+COPY apis /build/apis
+COPY config /build/config
+COPY database /build/database
+COPY utilities /build/utilities
+COPY go.mod go.sum /build/
+
+RUN go build -o authorizationGolang ./cmd/main.go
+
+FROM alpine:latest AS server
+WORKDIR /app
+
+
+COPY --from=builder /build/authorizationGolang /app/authorizationGolang
+# COPY --from=builder /build/apis /app/apis
+# COPY --from=builder /build/config /app/config
+# COPY --from=builder /build/
+# COPY --from=builder /build/
+# COPY --from=builder /build/
+
+
+
+CMD [".app/authorizationGolang"]

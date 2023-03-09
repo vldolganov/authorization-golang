@@ -1,13 +1,20 @@
-FROM golang:latest
+FROM golang:1.18 as builder
+WORKDIR /build
 
-RUN go version
-ENV GOPATH=/cmd
+COPY cmd /build/cmd
+COPY apis /build/apis
+COPY config /build/config
+COPY database /build/database
+COPY utilities /build/utilities
+COPY go.mod go.sum /build/
 
-EXPOSE 5000
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main ./cmd/main.go
 
-COPY ./ ./
+FROM alpine:3.16 as server
+RUN apk add --no-cache
 
-RUN go mod download
-RUN go build -o authorizationGolang ./cmd/main.go
+COPY --from=builder /build/main /app/
 
-CMD ["./authorizationGolang"]
+WORKDIR /app
+
+CMD ["./main", "--c"]

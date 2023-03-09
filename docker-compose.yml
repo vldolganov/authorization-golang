@@ -1,39 +1,17 @@
-version: '3.5'
+version: '3'
 
 services:
-  authorization-app:
-    container_name: authorization-app
-    build:
-      dockerfile: Dockerfile
-      context: .
+  postgres:
+    image: postgres:latest
+    container_name: pg
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: users
+    ports:
+      - "5432:5432"
+  server:
+    build: ./
     ports:
       - "5000:5000"
     depends_on:
-      - db
-    restart: always
-    environment:
-      DB_HOST: "localhost"
-      DB_PORT: "5432"
-      DB_USERNAME: "users"
-      DB_PASSWORD: "dolganoffadmin"
-    networks:
-      - default
-  db:
-    container_name: db
-    build:
-      context: ./sql
-      dockerfile: db.Dockerfile
-    restart: always
-    image: postgres:14
-    volumes:
-      - ./sql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
-    ports:
-      - "5436:5432"
-    environment:
-      POSTGRES_USER: "dolganoffadmin"
-      POSTGRES_PASSWORD: "dolganoffadmin"
-      POSTGRES_DB: "users"
-    networks:
-      - default
-networks:
-  default: {}
+      - postgres
